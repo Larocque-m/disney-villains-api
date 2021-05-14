@@ -4,7 +4,9 @@
     "nodemon": "^2.0.7"
   },
   "dependencies": {
-    "espress": "^0.0.0"
+    "espress": "^0.0.0",
+    "mysql2": "^2.2.5",
+    "sequelize": "^6.6.2"
   },
   "name": "disney-villains-api",
   "description": "In this two part exercise you are tasked with create a REST API for accessing Disney Villain data, complete with test suite.",
