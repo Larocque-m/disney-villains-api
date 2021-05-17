@@ -1,12 +1,12 @@
 const express = require('express')
 const bodyParser = require('body-parser')
-const { getAllVillains, getVillainBySlug, saveNewVillain } = require('./controller/villains')
+const { getAllVillains, getVillainsBySlug, saveNewVillain } = require('./controller/villains')
 
 const app = express()
 
 app.get('/villains', getAllVillains)
 
-app.get('/villains/:slug', getVillainBySlug)
+app.get('/villains/:slug', getVillainsBySlug)
 
 app.post('/', bodyParser.json(), saveNewVillain)
 
