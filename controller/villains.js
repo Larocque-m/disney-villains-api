@@ -14,4 +14,18 @@ const getVillainsBySlug = async (request, response) => {
   return response.send(matchingVillain)
 }
 
-models.exports = { getAllVillains, getVillainsBySlug }
+const saveNewVillain = async (request, response) => {
+  const { name, movie, slug } = request.body
+
+  if (!name || !movie || !slug) {
+    return response.status(400).send('A name, movie, or slug must be used')
+  }
+
+  const newVillain = await models.teams.create({
+    name, movie, slug
+  })
+
+  return response.status(201).send(newVillain)
+}
+
+models.exports = { getAllVillains, getVillainsBySlug, saveNewVillain }
