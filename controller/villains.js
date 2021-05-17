@@ -21,7 +21,7 @@ const saveNewVillain = async (request, response) => {
     return response.status(400).send('A name, movie, or slug must be used')
   }
 
-  const newVillain = await models.teams.create({
+  const newVillain = await models.Villains.create({
     name, movie, slug
   })
 
