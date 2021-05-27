@@ -1,7 +1,7 @@
-create database Disney;
+create database Disneyvillains;
 
 use Disney; 
-create table villains (
+create table wrongdoers (
 name varchar(255),
 movie varchar(255),
 slug varchar(255),
@@ -12,12 +12,12 @@ Primary Key(name)
 );
 show tables;
 DROP USER IF EXISTS 'newUser'@'localhost';
-CREATE USER 'villains'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password123';
+CREATE USER 'wrongdoers'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password123';
 GRANT ALL ON nfl. * TO 'newUser'@'localhost';
 FLUSH PRIVILEGES;
-select * from villains; 
+select * from wrongdoers; 
 
-insert into villains(name, movie, slug) values
+insert into wrongdoers(name, movie, slug) values
 
 ('Captain Hook', 'Peter Pan', 'captain-hook'),
 ('Cruella de Vil', 'One Hundred and One Dalmatians', 'cruella-de-vil'),

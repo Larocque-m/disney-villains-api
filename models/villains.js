@@ -1,5 +1,5 @@
 const Villains = (connection, Sequelize) => {
-  return connection.define('villains',
+  return connection.define('wrongdoers',
     {
       name: { type: Sequelize.STRING, primaryKey: true },
       movie: { type: Sequelize.STRING },

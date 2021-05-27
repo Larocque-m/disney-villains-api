@@ -1,6 +1,6 @@
 const express = require('express')
 const bodyParser = require('body-parser')
-const { getAllVillains, getVillainsBySlug, saveNewVillain } = require('./controller/villains')
+const { getAllVillains, getVillainsBySlug, saveNewVillain } = require('./controllers/villains')
 
 const app = express()
 
