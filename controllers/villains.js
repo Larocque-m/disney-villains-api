@@ -7,12 +7,19 @@ const getAllVillains = async (request, response) => {
 }
 
 const getVillainsBySlug = async (request, response) => {
-  const { slug } = request.params
+  try {
+    const { slug } = request.params
 
-  const matchingVillain = await models.Villains.findOne({ where: { slug } })
+    const matchingVillain = await models.Villains.findOne({ where: { slug } })
 
-  return response.send(matchingVillain)
+    return matchingVillain
+      ? response.send(matchingVillain)
+      : response.sendStatus(404)
+  } catch (error) {
+    return response.status(500).send('Unable to retrieve hero, please try again')
+  }
 }
+
 
 const saveNewVillain = async (request, response) => {
   const { name, movie, slug } = request.body
