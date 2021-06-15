@@ -1,38 +1,38 @@
 const chai = require('chai')
-const sinon = require('sinon')
+const { createSandbox } = require('sinon')
 const sinonChai = require('sinon-chai')
 const {
-  after, before, beforeEach, describe, it
+  after, afterEach, before, beforeEach, describe, it
 } = require('mocha')
 const { getAllVillains, getVillainsBySlug, saveNewVillain } = require('../../controllers/villains')
 const models = require('../../models')
-const { singleVillain, postedVillain, villainsList } = require('../mocks/villains')
+const { singleVillain, postedVillain, villainsList, postedVillainResponse } = require('../mocks/villains')
 
 chai.use(sinonChai)
 const { expect } = chai
 
 describe('Controllers - villains', () => {
   let sandbox
-  let stubbedFindOne
   let stubbedFindAll
   let stubbedSend
+  let stubbedCreate
+  let stubbedFindOne
   let response
   let stubbedSendStatus
-  let stubbedStatusSend
   let stubbedStatus
-  let stubbedCreate
+  let stubbedStatusDotSend
 
   before(() => {
-    sandbox = sinon.createSandbox()
+    sandbox = createSandbox()
 
-    stubbedFindOne = sandbox.stub(models.Villains, 'findOne')
-    stubbedFindAll = sandbox.stub(models.Villains, 'findAll')
     stubbedCreate = sandbox.stub(models.Villains, 'create')
+    stubbedFindAll = sandbox.stub(models.Villains, 'findAll')
+    stubbedFindOne = sandbox.stub(models.Villains, 'findOne')
 
     stubbedSend = sandbox.stub()
     stubbedSendStatus = sandbox.stub()
-    stubbedStatusSend = sandbox.stub()
     stubbedStatus = sandbox.stub()
+    stubbedStatusDotSend = sandbox.stub()
 
     response = {
       send: stubbedSend,
@@ -42,23 +42,24 @@ describe('Controllers - villains', () => {
   })
 
   beforeEach(() => {
-    stubbedStatus.returns({ send: stubbedStatusSend })
+    stubbedStatus.returns({ send: stubbedStatusDotSend })
   })
 
-  after(() => {
+  afterEach(() => {
     sandbox.reset()
   })
 
+  after(() => {
+    sandbox.restore()
+  })
 
 
   describe('getAllVillains', () => {
-    it('retrieves a list of heroes from the database and calls response.send() with the list', async () => {
-      const stubbedFindAll = sinon.stub(models.Villains, 'findAll').returns(villainsList)
-
-      const stubbedSend = sinon.stub()
-      const response = { send: stubbedSend }
+    it('retrieves a list of villains from the database and calls response.send() with the list', async () => {
+      stubbedFindAll.returns(villainsList)
 
       await getAllVillains({}, response)
+
       expect(stubbedFindAll).to.have.callCount(1)
       expect(stubbedSend).to.have.been.calledWith(villainsList)
     })
@@ -67,23 +68,19 @@ describe('Controllers - villains', () => {
 
       await getAllVillains({}, response)
 
+      expect(stubbedFindAll).to.have.callCount(1)
       expect(stubbedStatus).to.have.been.calledWith(500)
-      expect(stubbedStatusSend).to.have.been.calledWith('Unable to retrieve villains, please try again')
+      expect(stubbedStatusDotSend).to.have.been.calledWith('Unable to retrieve villains, please try again')
     })
   })
   describe('getVillainsBySlug', () => {
     // eslint-disable-next-line max-len
-    it('it retrieves the hero associated with the provided slug from the database and calls response.send with it', async () => {
-      const request = { params: { slug: 'scar' } }
-      const stubbedSend = sinon.stub()
-      const response = { send: stubbedSend }
-      const stubbedFindOne = sinon.stub(models.Villains, 'findOne').returns(singleVillain)
+    it('it retrieves the villain associated with the provided slug from the database and calls response.send with it', async () => {
+      stubbedFindOne.returns(singleVillain)
+      const request = { params: { slug: 'queen-of-hearts' } }
 
       await getVillainsBySlug(request, response)
-      expect(stubbedFindOne).to.have.been.calledWith({
-        attributes: ['name', 'movie', 'slug'],
-        where: { slug: 'scar' }
-      })
+      expect(stubbedFindOne).to.have.been.calledWith({ where: { slug: 'queen-of-hearts' } })
       expect(stubbedSend).to.have.been.calledWith(singleVillain)
     })
     it('returns a 404 when no villain is found', async () => {
@@ -92,10 +89,7 @@ describe('Controllers - villains', () => {
 
       await getVillainsBySlug(request, response)
 
-      expect(stubbedFindOne).to.have.been.calledWith({
-        attributes: ['name', 'movie', 'slug'],
-        where: { slug: 'not-found' }
-      })
+      expect(stubbedFindOne).to.have.been.calledWith({ where: { slug: 'not-found' } })
       expect(stubbedSendStatus).to.have.been.calledWith(404)
     })
 
@@ -105,51 +99,45 @@ describe('Controllers - villains', () => {
 
       await getVillainsBySlug(request, response)
 
-      expect(stubbedFindOne).to.have.been.calledWith({
-        attributes: ['name', 'movie', 'slug'],
-        where: { slug: 'throw-error' }
-      })
+      expect(stubbedFindOne).to.have.been.calledWith({ where: { slug: 'throw-error' } })
       expect(stubbedStatus).to.have.been.calledWith(500)
-      expect(stubbedStatusSend).to.have.been.calledWith('Unable to retrieve villain, please try agin')
+      expect(stubbedStatusDotSend).to.have.been.calledWith('Unable to retrieve villains, please try again')
     })
   })
 
   describe('saveNewVillain', () => {
     // eslint-disable-next-line max-len
-    it('accepts new hero details and saves them as a new hero, returning the saved record with a 201 status', async () => {
+    it('accepts new villain details and saves them as a new villain, returning the saved record with a 200 status', async () => {
+      stubbedCreate.returns(postedVillainResponse)
+
       const request = { body: postedVillain }
-      const stubbedSend = sinon.stub()
-      const response = { status: stubbedSend }
-      const stubbedStatus = sinon.stub().returns({ send: stubbedSend })
-      const stubbedCreate = sinon.stub(models.Villains, 'create').returns(singleVillain)
-
-
 
       await saveNewVillain(request, response)
+
       expect(stubbedCreate).to.have.been.calledWith(postedVillain)
       expect(stubbedStatus).to.have.been.calledWith(201)
-      expect(stubbedSend).to.have.been.calledWith(singleVillain)
+      expect(stubbedStatusDotSend).to.have.been.calledWith(postedVillainResponse)
     })
     it('returns a 400 status when all required fields are not provided', async () => {
-      const { name, movie } = postedVillain
-      const request = { body: { name, movie } }
+      const request = { body: { name: postedVillain.name, slug: postedVillain.slug } }
 
       await saveNewVillain(request, response)
 
-      expect(stubbedCreate).to.have.callCount(0)
+      expect(stubbedCreate).to.have.been.callCount(0)
       expect(stubbedStatus).to.have.been.calledWith(400)
-      expect(stubbedStatusSend).to.have.been.calledWith('Required fields: name, movie, slug')
+      expect(stubbedStatusDotSend).to.have.been.calledWith('A name, movie, or slug must be used')
     })
-    it('returns a 500 status when an error occurs saving the new villain', async () => {
-      const request = { body: postedVillain }
 
+    it('returns a 500 status when an error occurs saving the new villain', async () => {
       stubbedCreate.throws('ERROR!')
+
+      const request = { body: postedVillain }
 
       await saveNewVillain(request, response)
 
       expect(stubbedCreate).to.have.been.calledWith(postedVillain)
       expect(stubbedStatus).to.have.been.calledWith(500)
-      expect(stubbedStatusSend).to.have.been.calledWith('Unable to add villain, please try again')
+      expect(stubbedStatusDotSend).to.have.been.calledWith('Unable to create villains, please try again')
     })
   })
 })
