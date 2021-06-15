@@ -16,5 +16,5 @@ app.all('*', (request, response) => {
 
 app.listen(1337, () => {
   // eslint-disable-next-line no-console
-  console.log('Listening for you...')
+  console.log('Listening for you on port 1337...')
 })

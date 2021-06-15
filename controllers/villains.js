@@ -1,16 +1,16 @@
 const models = require('../models')
 
 const getAllVillains = async (request, response) => {
-  const Villains = await models.Villains.findAll()
+  const villains = await models.villains.findAll()
 
-  return response.send(Villains)
+  return response.send(villains)
 }
 
 const getVillainsBySlug = async (request, response) => {
   try {
     const { slug } = request.params
 
-    const matchingVillain = await models.Villains.findOne({ where: { slug } })
+    const matchingVillain = await models.villains.findOne({ where: { slug } })
 
     return matchingVillain
       ? response.send(matchingVillain)
@@ -28,7 +28,7 @@ const saveNewVillain = async (request, response) => {
     return response.status(400).send('A name, movie, or slug must be used')
   }
 
-  const newVillain = await models.Villains.create({
+  const newVillain = await models.villains.create({
     name, movie, slug
   })
 

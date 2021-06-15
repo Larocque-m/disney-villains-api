@@ -2,9 +2,9 @@ const chai = require('chai')
 const sinon = require('sinon')
 const sinonChai = require('sinon-chai')
 const {
-  afterEach, before, beforeEach, describe, it
+  after, before, beforeEach, describe, it
 } = require('mocha')
-const { getAllVillains, getVillainBySlug, saveNewVillain } = require('../../controllers/villains')
+const { getAllVillains, getVillainsBySlug, saveNewVillain } = require('../../controllers/villains')
 const models = require('../../models')
 const { singleVillain, postedVillain, villainsList } = require('../mocks/villains')
 
@@ -45,7 +45,7 @@ describe('Controllers - villains', () => {
     stubbedStatus.returns({ send: stubbedStatusSend })
   })
 
-  afterEach(() => {
+  after(() => {
     sandbox.reset()
   })
 
@@ -79,7 +79,7 @@ describe('Controllers - villains', () => {
       const response = { send: stubbedSend }
       const stubbedFindOne = sinon.stub(models.Villains, 'findOne').returns(singleVillain)
 
-      await getVillainBySlug(request, response)
+      await getVillainsBySlug(request, response)
       expect(stubbedFindOne).to.have.been.calledWith({
         attributes: ['name', 'movie', 'slug'],
         where: { slug: 'scar' }
@@ -90,7 +90,7 @@ describe('Controllers - villains', () => {
       stubbedFindOne.returns(null)
       const request = { params: { slug: 'not-found' } }
 
-      await getVillainBySlug(request, response)
+      await getVillainsBySlug(request, response)
 
       expect(stubbedFindOne).to.have.been.calledWith({
         attributes: ['name', 'movie', 'slug'],
@@ -103,7 +103,7 @@ describe('Controllers - villains', () => {
       stubbedFindOne.throws('ERROR!')
       const request = { params: { slug: 'throw-error' } }
 
-      await getVillainBySlug(request, response)
+      await getVillainsBySlug(request, response)
 
       expect(stubbedFindOne).to.have.been.calledWith({
         attributes: ['name', 'movie', 'slug'],

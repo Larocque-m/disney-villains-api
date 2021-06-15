@@ -11,9 +11,9 @@ deletedAt datetime,
 Primary Key(name)
 );
 show tables;
-DROP USER IF EXISTS 'newUser'@'localhost';
+DROP USER IF EXISTS 'wrongdoers'@'localhost';
 CREATE USER 'wrongdoers'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password123';
-GRANT ALL ON nfl. * TO 'newUser'@'localhost';
+GRANT ALL ON nfl. * TO 'wrongdoers'@'localhost';
 FLUSH PRIVILEGES;
 select * from wrongdoers; 
 
